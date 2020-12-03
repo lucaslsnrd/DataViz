@@ -1,0 +1,153 @@
+# Install Packages
+
+pip install pywaffle
+pip install highlight-text
+pip install soccerplots
+
+# Import Modules
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import matplotlib as mpl
+from soccerplots.utils import add_image
+from highlight_text import fig_text
+from pywaffle import Waffle
+
+# Read the data (imported with WhoScored)
+
+df = pd.read_csv('My_Data.csv')
+df['player'] = df['player'].str.split('\\', expand = True)[0]
+df = df.sort_values(by = ['Touches'], ascending = False)
+df = df.drop(16)
+df = df.drop('Touches', axis = 1)
+df = df.T
+df.columns = df.iloc[0]
+df = df.drop('player')
+
+my_list = df.columns.values.tolist()
+
+df = pd.DataFrame(df,columns = my_list)
+
+# For touches plot, it's better to drop the goalkeeper
+
+df = df.drop('Goalkeeper Name', axis = 1)
+df
+
+# If you want just one plot:
+  # Import plot
+
+fig = plt.figure(
+    FigureClass = Waffle,
+    values = df.iloc[:,0],
+    labels = list(df.index),
+    rows = 10,
+    title = {'label' : my_list[0]}, 
+    figsize = (5,5),
+    colors = ['#5C96DB', '#E3A955', '#CE424F','#7F7E80','#70E375'])
+
+# If you want multiple plots (simple advice, just print 9 plots for more visibility)
+  # Import plots
+
+fig = plt.figure(
+    FigureClass = Waffle,
+    rows = 10,
+    figsize = (12,13),
+    plots = {
+        '331':  {'values' : df.iloc[:,0],
+           'title' : {
+              'label' : my_list[0],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             
+             '332':  {'values' : df.iloc[:,1],
+           'title' : {
+              'label' : my_list[1],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             
+             '333':  {'values' : df.iloc[:,2],
+           'title' : {
+              'label' : my_list[2],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             
+             '334':  {'values' : df.iloc[:,3],
+           'title' : {
+              'label' : my_list[3],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             
+             '335':  {'values' : df.iloc[:,4],
+           'title' : {
+              'label' : my_list[4],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             
+             '336':  {'values' : df.iloc[:,5],
+           'title' : {
+              'label' : my_list[5],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             
+             '337':  {'values' : df.iloc[:,6],
+           'title' : {
+              'label' : my_list[6],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             '338':  {'values' : df.iloc[:,7],
+           'title' : {
+              'label' : my_list[7],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}},
+             
+             '339':  {'values' : df.iloc[:,8],
+           'title' : {
+              'label' : my_list[8],
+              'color' : 'white',
+              'fontsize' : (15),
+              'loc' : 'left'}}},    
+    colors = ('#5C96DB', '#E3A955', '#CE424F','#7F7E80','#70E375'))
+
+# Add the title
+
+fig_text(s = 'Où est-ce que les joueurs Lyonnais ont touché le ballon contre Reims ? \n<Own Surface >,  <Déf 3rd Zone>, <Mid Zone>, <Off 3rd Zone>, & <Opp Surface >',
+         x = 0.008, y=1.068,
+         fontsize = 22,
+         va = ('top'),
+         ha = ('left'),
+         fontweight = 'bold',
+         color = 'white',
+         highlight_styles = ['italic'],
+         highlight_weights = ['bold'],
+         highlight_colors = ('#5C96DB', '#E3A955', '#CE424F','#7F7E80','#70E375'))
+
+fig.patch.set_color('#222222')
+
+# Add an endnote if you want
+
+fig_text(s='@lucaslaisnard / Twitter',
+         fontstyle = 'italic',
+         color = 'white',
+         x = -0.1, y = -0.02,
+         ha = "left",
+         fontsize = 12,
+         fontname = "helvetica")
+
+# Add the team logo
+
+add_image(image="My_Image.png", fig=fig, left=-0.1, bottom=0.99, width=0.1, height=0.085, visible = True)
+
+# Save the plot
+
+plt.savefig('My_Waffle_Plot', dpi=300, facecolor='#222222', edgecolor='w',
+    orientation='portrait', papertype=None, format=None,
+    transparent=False, bbox_inches='tight', pad_inches=0.1,
+    frameon=None)
