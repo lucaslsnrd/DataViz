@@ -1,0 +1,71 @@
+import pandas as pd
+from mplsoccer.pitch import Pitch
+from matplotlib.colors import to_rgba
+import numpy as np
+from mplsoccer.statsbomb import read_event, EVENT_SLUG
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib import colorbar
+import matplotlib.image as mpimg
+from matplotlib.colors import LinearSegmentedColormap
+import seaborn as sns
+from soccerplots.utils import add_image
+
+
+df = pd.read_csv(#CSVfile)
+
+df = df.loc[(df['teamId']== #YourTeamId)]
+
+df['x'] = df['x']*1.2
+df['y'] = df['y']*.8
+df['endX'] = df['endX']*1.2
+df['endY'] = df['endY']*.8
+
+values = df['outcomeType/displayName'].value_counts()
+nbr_pass = sum(values)
+
+success_rate = values/nbr_pass * 100
+print(values)
+round(success_rate,1)
+
+pitch = Pitch(line_zorder=2, figsize=(16, 9), layout=(4, 5),
+              tight_layout=False, constrained_layout=True, line_color='w', pitch_color = '#222222')
+
+
+bin_statistic = pitch.bin_statistic([0], [0], statistic='count', bins=(3, 1))
+
+fig, axes = pitch.draw()
+axes = axes.ravel()
+players = df['playerId'].values
+passes = df['x']
+
+for i, ax in enumerate(axes[:len(players)]):
+    ax.set_title(players[i], fontsize=20, c = 'w', fontname = "DIN Alternate")
+    for x in range(len(players)):
+        if df['outcomeType/displayName'].iloc[x] == 'Successful':
+            pitch.lines(df['x'].iloc[x],
+                    df['y'].iloc[x], 
+                    df['endX'].iloc[x],
+                    df['endY'].iloc[x], 
+                    lw=4, 
+                    transparent=True, 
+                    comet=True, 
+                    label='Passes réussies',
+                    color='#70E375', 
+                    ax=ax,)
+        if df['outcomeType/displayName'].iloc[x] == 'Unsuccessful':
+            pitch.lines(df['x'].iloc[x],
+                    df['y'].iloc[x], 
+                    df['endX'].iloc[x],
+                    df['endY'].iloc[x], 
+                    lw=4, 
+                    transparent=True, 
+                    comet=True, 
+                    label='Passes réussies',
+                    color='crimson', 
+                    ax=ax)
+
+
+fig.set_facecolor('#222222')
+ax.patch.set_facecolor('#222222')
+
